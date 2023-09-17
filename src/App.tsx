@@ -1,30 +1,36 @@
+import { useState } from "react";
 import "./App.css";
 
-type SquareProps = {
-  value: string;
-};
+const Square = () => {
+  const [value, setValue] = useState<string | null>(null);
+  const handleClick = () => {
+    setValue("X");
+  };
 
-const Square = ({ value }: SquareProps) => (
-  <button className="square">{value}</button>
-);
+  return (
+    <button className="square" onClick={handleClick}>
+      {value}
+    </button>
+  );
+};
 
 const Board = () => {
   return (
     <>
       <div className="board-row">
-        <Square value="1" />
-        <Square value="2" />
-        <Square value="3" />
+        <Square />
+        <Square />
+        <Square />
       </div>
       <div className="board-row">
-        <Square value="4" />
-        <Square value="5" />
-        <Square value="6" />
+        <Square />
+        <Square />
+        <Square />
       </div>
       <div className="board-row">
-        <Square value="7" />
-        <Square value="8" />
-        <Square value="9" />
+        <Square />
+        <Square />
+        <Square />
       </div>
     </>
   );
