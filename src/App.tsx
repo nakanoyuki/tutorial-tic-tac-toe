@@ -2,9 +2,17 @@ import { useState } from "react";
 import "./App.css";
 
 type SquareProps = {
-  value: string;
+  value: string | null;
   // Square コンポーネントが onSquareClick プロパティを受け取る
   onSquareClick: () => void;
+};
+
+type BoardProps = {
+  xIsNext: boolean;
+  squares: (string | null)[];
+
+  //引数を受け取るように
+  onPlay: (nextSquares: (string | null)[]) => void;
 };
 
 const Square = ({ value, onSquareClick }: SquareProps) => {
@@ -35,10 +43,7 @@ const calculateWinner = (squares: (string | null)[]) => {
   return null;
 };
 // すべてのマスの状態をボードコンポーネントに保持
-const Board = () => {
-  const [xIsNext, setXIsNext] = useState(true);
-  const [squares, setSquares] = useState(Array(9).fill(null)); // 長さが9ですべての要素が null で初期化された配列を作成
-
+export const Board = ({ xIsNext, squares, onPlay }: BoardProps) => {
   const handleClick = (i: number) => {
     // calculateWinnerはsquares 配列に対して勝者がいるかどうかをチェックする関数
     // ゲームに勝者がすでにいる場合、クリックを無視し、何もせずに関数を終了
@@ -49,10 +54,10 @@ const Board = () => {
     } else {
       nextSquares[i] = "O";
     }
-
-    setSquares(nextSquares);
-    // プレイヤーが移動するたびに、xIsNext（ブール値）が反転される
-    setXIsNext(!xIsNext);
+    onPlay(nextSquares);
+    // setSquares(nextSquares);
+    // // プレイヤーが移動するたびに、xIsNext（ブール値）が反転される
+    // setXIsNext(!xIsNext);
   };
 
   const winner = calculateWinner(squares);
@@ -85,4 +90,28 @@ const Board = () => {
   );
 };
 
-export default Board;
+const Game = () => {
+  const [xIsNext, setXIsNext] = useState(true);
+  // ゲームの過去の状態（マス目の履歴）を格納
+  const [history, setHistory] = useState([
+    Array(9).fill(null) as (string | null)[],
+  ]); // 長さが9ですべての要素が null で初期化された配列を作成
+  const currentSquares = history[history.length - 1]; //lengthは要素の数を返すので、最後の要素のインデックスを取得するために -1 を引く
+
+  const handlePlay = (nextSquares: (string | null)[]) => {
+    setHistory([...history, nextSquares]);
+    setXIsNext(!xIsNext);
+  };
+  return (
+    <div className="game">
+      <div className="game-board">
+        <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
+      </div>
+      <div className="game-info">
+        <ol>{/*TODO*/}</ol>
+      </div>
+    </div>
+  );
+};
+
+export default Game;
