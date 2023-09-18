@@ -17,12 +17,21 @@ const Square = ({ value, onSquareClick }: SquareProps) => {
 
 // すべてのマスの状態をボードコンポーネントに保持
 const Board = () => {
+  const [xIsNext, setXIsNext] = useState(true);
   const [squares, setSquares] = useState(Array(9).fill(null)); // 長さが9ですべての要素が null で初期化された配列を作成
 
   const handleClick = (i: number) => {
+    if (squares[i]) return;
     const nextSquares = squares.slice();
-    nextSquares[i] = "X";
+    if (xIsNext) {
+      nextSquares[i] = "X";
+    } else {
+      nextSquares[i] = "O";
+    }
+
     setSquares(nextSquares);
+    // プレイヤーが移動するたびに、xIsNext（ブール値）が反転される
+    setXIsNext(!xIsNext);
   };
   return (
     <>
