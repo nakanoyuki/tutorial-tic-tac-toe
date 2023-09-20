@@ -23,25 +23,6 @@ const Square = ({ value, onSquareClick }: SquareProps) => {
   );
 };
 
-const calculateWinner = (squares: (string | null)[]) => {
-  const lines = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [2, 4, 6],
-  ];
-
-  for (let i = 0; i < lines.length; i++) {
-    const [a, b, c] = lines[i];
-    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c])
-      return squares[a];
-  }
-  return null;
-};
 // すべてのマスの状態をボードコンポーネントに保持
 export const Board = ({ xIsNext, squares, onPlay }: BoardProps) => {
   const handleClick = (i: number) => {
@@ -91,17 +72,16 @@ export const Board = ({ xIsNext, squares, onPlay }: BoardProps) => {
 };
 
 const Game = () => {
-  const [xIsNext, setXIsNext] = useState(true);
   // ゲームの過去の状態（マス目の履歴）を格納
   const [history, setHistory] = useState([Array(9).fill(null)]); // 長さが9ですべての要素が null で初期化された配列を作成
   const [currentMove, setCurrentMove] = useState(0);
-  const currentSquares = history[history.length - 1]; //lengthは要素の数を返すので、最後の要素のインデックスを取得するために -1 を引く
+  const xIsNext = currentMove % 2 === 0;
+  const currentSquares = history[currentMove];
 
   const handlePlay = (nextSquares: (string | null)[]) => {
     const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
     setHistory(nextHistory);
     setCurrentMove(nextHistory.length - 1);
-    setXIsNext(!xIsNext);
   };
 
   // ゲームの履歴を選択したときに、選択した履歴のステップに応じてゲームの現在の状態を更新する
@@ -109,7 +89,6 @@ const Game = () => {
   const jumpTo = (nextMove: number) => {
     setCurrentMove(nextMove);
     // currentMoveを変更する数値が偶数であれば、xIsNextをtrueに設定
-    setXIsNext(nextMove % 2 === 0);
   };
 
   // squares: 盤面の状態を表す (string | null)[] 型の配列
@@ -117,7 +96,7 @@ const Game = () => {
   const moves = history.map((squares, move) => {
     let description;
     if (move > 0) {
-      description = "Go To move #" + move;
+      description = "Go to move #" + move;
     } else {
       description = "Go to game start";
     }
@@ -141,3 +120,23 @@ const Game = () => {
 };
 
 export default Game;
+
+const calculateWinner = (squares: (string | null)[]) => {
+  const lines = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
+  ];
+
+  for (let i = 0; i < lines.length; i++) {
+    const [a, b, c] = lines[i];
+    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c])
+      return squares[a];
+  }
+  return null;
+};
