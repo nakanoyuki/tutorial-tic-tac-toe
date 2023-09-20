@@ -94,26 +94,35 @@ const Game = () => {
   const [xIsNext, setXIsNext] = useState(true);
   // ゲームの過去の状態（マス目の履歴）を格納
   const [history, setHistory] = useState([Array(9).fill(null)]); // 長さが9ですべての要素が null で初期化された配列を作成
+  const [currentMove, setCurrentMove] = useState(0);
   const currentSquares = history[history.length - 1]; //lengthは要素の数を返すので、最後の要素のインデックスを取得するために -1 を引く
 
   const handlePlay = (nextSquares: (string | null)[]) => {
-    setHistory([...history, nextSquares]);
+    const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
+    setHistory(nextHistory);
+    setCurrentMove(nextHistory.length - 1);
     setXIsNext(!xIsNext);
   };
 
-  const jumpTo = (nextMove:any) => {};
+  // ゲームの履歴を選択したときに、選択した履歴のステップに応じてゲームの現在の状態を更新する
+  // currentMove を変更し、どちらのプレイヤーが次に手番を持つかを設定
+  const jumpTo = (nextMove: number) => {
+    setCurrentMove(nextMove);
+    // currentMoveを変更する数値が偶数であれば、xIsNextをtrueに設定
+    setXIsNext(nextMove % 2 === 0);
+  };
 
   // squares: 盤面の状態を表す (string | null)[] 型の配列
   // move: ステップの番号またはインデックス(ゲームの履歴を表示するために使用)
   const moves = history.map((squares, move) => {
     let description;
     if (move > 0) {
-      description = "Go To move #" + move ;
+      description = "Go To move #" + move;
     } else {
       description = "Go to game start";
     }
     return (
-      <li>
+      <li key={move}>
         <button onClick={() => jumpTo(move)}>{description}</button>
       </li>
     );
