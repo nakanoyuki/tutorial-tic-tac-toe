@@ -93,22 +93,39 @@ export const Board = ({ xIsNext, squares, onPlay }: BoardProps) => {
 const Game = () => {
   const [xIsNext, setXIsNext] = useState(true);
   // ゲームの過去の状態（マス目の履歴）を格納
-  const [history, setHistory] = useState([
-    Array(9).fill(null) as (string | null)[],
-  ]); // 長さが9ですべての要素が null で初期化された配列を作成
+  const [history, setHistory] = useState([Array(9).fill(null)]); // 長さが9ですべての要素が null で初期化された配列を作成
   const currentSquares = history[history.length - 1]; //lengthは要素の数を返すので、最後の要素のインデックスを取得するために -1 を引く
 
   const handlePlay = (nextSquares: (string | null)[]) => {
     setHistory([...history, nextSquares]);
     setXIsNext(!xIsNext);
   };
+
+  const jumpTo = (nextMove:any) => {};
+
+  // squares: 盤面の状態を表す (string | null)[] 型の配列
+  // move: ステップの番号またはインデックス(ゲームの履歴を表示するために使用)
+  const moves = history.map((squares, move) => {
+    let description;
+    if (move > 0) {
+      description = "Go To move #" + move ;
+    } else {
+      description = "Go to game start";
+    }
+    return (
+      <li>
+        <button onClick={() => jumpTo(move)}>{description}</button>
+      </li>
+    );
+  });
+
   return (
     <div className="game">
       <div className="game-board">
         <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
       </div>
       <div className="game-info">
-        <ol>{/*TODO*/}</ol>
+        <ol>{moves}</ol>
       </div>
     </div>
   );
